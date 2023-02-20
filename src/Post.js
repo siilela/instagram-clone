@@ -2,7 +2,7 @@ import React from "react";
 import "./Post.css";
 import Avatar from "@material-ui/core/Avatar";
 
-const Post = ({ userName, caption, imageURL }) => {
+const Post = ({userName, caption, imageURL }) => {
   return (
     <div className="post">
       <div className="post__header">
