@@ -4,7 +4,7 @@ import { storage, db } from "./firebase";
 import './imageUpload.css';
 import firebase from "firebase/compat/app";
 
-const Imageupload = ({ username }) => {
+const Imageupload = ({ userName }) => {
   const [caption, setCaption] = useState("");
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState(null);
@@ -41,7 +41,7 @@ const Imageupload = ({ username }) => {
               timestamp: firebase.firestore.FieldValue.serverTimestamp(),
               caption: caption,
               imageURL: url,
-              userName: "Sixty^60",
+              userName: userName,
             });
             setProgress(0);
             setCaption("");
@@ -56,7 +56,7 @@ const Imageupload = ({ username }) => {
       {/*  Caption input*/}
       {/* File picker */}
       {/* Post Button  */}
-      <p>{username}</p>
+      {/* <p>{username}</p> */}
       <progress className="imageupload__progress" value={progress} max="100"/>
       <input
         type="text"

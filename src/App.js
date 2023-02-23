@@ -33,7 +33,7 @@ function App() {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
 
-  const [username, setUsername] = useState("");
+  const [userName, setUseNname] = useState("");
   const [user, setUser] = useState(null);
   // const [fname, setFname] = useState("");
   const [email, setEmail] = useState("");
@@ -52,27 +52,29 @@ function App() {
         setUser(null);
       }
     });
-    
+
     return () => {
-       unsubscribe();
+      unsubscribe();
     };
-  }, [user, username]);
+  }, [user, userName]);
 
   useEffect(() => {
-    db.collection("posts").orderBy('timestamp','desc').onSnapshot((snapshot) => {
-      setPost(snapshot.docs.map((doc) => doc.data()));
-    });
+    db.collection("posts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setPost(snapshot.docs.map((doc) => doc.data()));
+      });
   }, []);
 
   const signUp = (e) => {
     e.preventDefault();
-    console.log(username);
+    console.log(userName);
     console.log(email);
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((authUser) => {
         return authUser.user.updateProfile({
-          displayName: username,
+          displayName: userName,
         });
       })
       .catch((error) => alert(error.message));
@@ -81,7 +83,7 @@ function App() {
 
   const signIn = (e) => {
     e.preventDefault();
-    console.log("email ",email);
+    console.log("email ", email);
     auth
       .signInWithEmailAndPassword(email, password)
       .catch((error) => alert(error.message));
@@ -91,13 +93,6 @@ function App() {
 
   return (
     <div className="App">
-      {/*  Upload pics on to DB*/}
-      {user?.displayName ? (
-        <Imageupload userName={user.displayName} />
-      ) : (
-        <h3>Sorry , Please log in to upload image</h3>
-      )}
-
       {/* Header */}
       <Modal
         open={open}
@@ -113,8 +108,8 @@ function App() {
               <Input
                 placeholder="username"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={userName}
+                onChange={(e) => setUseNname(e.target.value)}
               />
               {/* <Input
                 placeholder="fname"
@@ -134,7 +129,9 @@ function App() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <Button type="submit" onClick={signUp}>Sign Up</Button>
+              <Button type="submit" onClick={signUp}>
+                Sign Up
+              </Button>
             </center>
           </form>
         </div>
@@ -174,28 +171,43 @@ function App() {
           src="https://www.mediaweek.com.au/wp-content/uploads/2022/10/Instagram-logo.jpg"
           alt=""
         />
+        {user ? (
+          <Button onClick={() => auth.signOut()}>Logout</Button>
+        ) : (
+          <div className="app__loginConatiner">
+            <Button onClick={() => setOpen(true)}>Sign up</Button>
+            <Button onClick={() => setOpenSignIn(true)}>Sign in</Button>
+          </div>
+        )}
       </div>
       {/* Posts */}
 
-      {user ? (
-        <Button onClick={() => auth.signOut()}>Logout</Button>
-      ) : (
-        <div className="app__loginConatiner">
-          <Button onClick={() => setOpen(true)}>Sign up</Button>
-          <Button onClick={() => setOpenSignIn(true)}>Sign in</Button>
+      <div className="app__post">
+        <div className="app__postLeft">
+          {posts.map(({id, userName, caption, imageURL }) => (
+            <Post
+              key={userName}
+              postId={id}
+              user={user}
+              userName={userName}
+              caption={caption}
+              imageURL={imageURL}
+            />
+          ))}
         </div>
-      )}
+        <div className="app__postRight">
+          <h1>News feed....</h1>
+        </div>
 
-      {posts.map(({ id, userName, caption, imageURL }) => (
-        <Post
-          key={userName}
-          userName={userName}
-          caption={caption}
-          imageURL={imageURL}
-        />
-      ))}
-
-      {/* Posts */}
+        {/* Posts */}
+        {/*  Upload pics on to DB*/}
+       
+      </div>
+      {user?.displayName ? (
+          <Imageupload userName={user.displayName} />
+        ) : (
+          <h3>Sorry , Please log in to upload image</h3>
+        )}
     </div>
   );
 }
